@@ -23,9 +23,9 @@ POST http://localhost:3000/api/users/add
 Content-Type: application/json
 
 {
-  "name": "Test6",
-  "email": "test6@mail.com",
-  "password": "test6"
+  "name": "Test7",
+  "email": "test7@mail.com",
+  "password": "test7"
 }
 
 ###
@@ -62,10 +62,10 @@ POST http://localhost:3000/api/products/add
 Content-Type: application/json
 
 {
-  "name": "Produkt 4",
-  "description": "Beskrivning av produkt 4",
-  "price": 400, 
-  "lager": 40
+  "name": "Produkt 5",
+  "description": "Beskrivning av produkt 5",
+  "price": 500, 
+  "lager": 50
 }
 
 ###
@@ -82,12 +82,12 @@ Content-Type: application/json
   "user": "65be4a113c4217b27382381d",
       "products": [
     {
-      "productId": "65be4f15fd6804117d506efc",
-      "quantity": 1
+      "productId": "65be4ef5fd6804117d506ef8",
+      "quantity": 20
     },
     {
-      "productId": "65be4ed755b994003e151481",
-      "quantity": 2
+      "productId": "65be4ef7fd6804117d506efa",
+      "quantity": 20
     }
   ]
 }
@@ -100,18 +100,3 @@ GET http://localhost:3000/api/orders/all/
 
 ###
 
-POST http://localhost:3000/api/orders/add
-Content-Type: application/json
-
-{
-  "user": "65bd6be0e4c00a7eff4a8b93",
-      "products": [    
-    {
-      "productId": "65be4f366999f1b2d3927d29"
-    },
-    {
-      "productId": "65be4f296999f1b2d3927d27"
-    }]
-}
-
-###

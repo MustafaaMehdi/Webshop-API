@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
-// const { ObjectId } = require('mongodb');
-// const mongoose = require('mongoose');
 const OrderModel = require('../models/order-model')
+const ProductModel = require('../models/product-model');
+
 /* GET users listing. */
 router.get('/all', async (req,res) => {
   const order = await OrderModel.find()
@@ -15,9 +15,27 @@ router.post('/add', async (req,res) => {
       products: req.body.products,
     });
 
-    const placedOrder = await order.save();
-    console.log({user: order.name});
-    res.status(201).json(placedOrder);
+    orderComplete = true;
+
+    for (const orderedProducts of req.body.products) {
+      const orderStock = orderedProducts.quantity;
+      const product = await ProductModel.findById(orderedProducts.productId);
+
+
+      if (product.lager >= orderStock) {
+        product.lager -= orderStock;
+        await product.save();
+      } else {
+        orderComplete = false;
+      }
+    }
+
+    if (orderComplete) {
+          const placedOrder = await order.save();
+          res.status(201).json(placedOrder);
+    } else if (!orderComplete) {
+      res.json({Error: 'Insufficient items in stock'});
+    }
 });
 
 module.exports = router;
