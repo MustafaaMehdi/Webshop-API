@@ -79,14 +79,14 @@ POST http://localhost:3000/api/orders/add
 Content-Type: application/json
 
 {
-  "user": "{{getUsers.response.body.$[0].id}}",
+  "user": "65be4a113c4217b27382381d",
       "products": [
     {
-      "productId": "// ID PÅ EN PRODUKT",
+      "productId": "65be4f15fd6804117d506efc",
       "quantity": 1
     },
     {
-      "productId": "// ID PÅ EN PRODUKT",
+      "productId": "65be4ed755b994003e151481",
       "quantity": 2
     }
   ]
@@ -100,11 +100,18 @@ GET http://localhost:3000/api/orders/all/
 
 ###
 
-GET http://localhost:3000/api/products
+POST http://localhost:3000/api/orders/add
 Content-Type: application/json
 
 {
-  "user": "{{getUsers.response.body.$[0].id}}"
+  "user": "65bd6be0e4c00a7eff4a8b93",
+      "products": [    
+    {
+      "productId": "65be4f366999f1b2d3927d29"
+    },
+    {
+      "productId": "65be4f296999f1b2d3927d27"
+    }]
 }
 
 ###
