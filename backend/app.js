@@ -3,11 +3,14 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const mongoose = require('mongoose')
+require('dotenv').config()
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var productsRouter = require('./routes/products');
-var ordersRouter = require('./routes/orders');
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+const productsRouter = require('./routes/products');
+const ordersRouter = require('./routes/orders');
+const categoriesRouter = require('./routes/categories');
+
 
 var app = express();
 
@@ -19,7 +22,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 async function init() {
     try {
-        await mongoose.connect('mongodb://127.0.0.1:27017/mustafa-mehdi')    
+        await mongoose.connect(process.env.MONGO_SRV)    
         console.log('Database is up and running');
     } catch (error) {
         console.log('Database error', error);
@@ -31,6 +34,8 @@ app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/orders', ordersRouter);
+app.use('/api/categories', categoriesRouter);
+
 
 
 module.exports = app;
