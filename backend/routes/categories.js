@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
-const CategoryModel = require('../models/categories-model')
+const CategoryModel = require('../models/categories-model');
+const productModel = require('../models/product-model');
 
 /* GET users listing. */
 router.get('/', async (req, res) => {
@@ -13,6 +14,8 @@ router.get('/', async (req, res) => {
   }
 
 });
+
+
 
 
 

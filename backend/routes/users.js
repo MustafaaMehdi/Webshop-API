@@ -53,9 +53,9 @@ router.post('/add', (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const inputPassword = req.body.password;
-    const user = await UserModel.findOne({ email: req.body.email }).exec()
+    await UserModel.findOne({ email: req.body.email }).exec()
     .then(user => {
-      if (user.length < 1) {
+      if (!user) {
         return res.status(404).json({
           message: 'User does not exist'
         })
@@ -78,8 +78,8 @@ router.post('/login', async (req, res) => {
       })
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({error})
+    console.log('ERROR', error);
+    res.status(500).json({error: 'something went wrong'})
   }
 });
 

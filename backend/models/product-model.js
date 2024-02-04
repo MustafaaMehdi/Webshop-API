@@ -15,6 +15,15 @@ const ProductSchema = mongoose.Schema({
     lager: {
         type: Number,
         required: true
+    },
+    category: {
+        type: mongoose.Types.ObjectId,
+        required: true,
+        ref: 'category'
+    },
+    token: {
+        type: String,
+        select: false
     }
 })
 

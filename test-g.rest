@@ -13,7 +13,7 @@ POST http://localhost:3000/api/users/
 Content-Type: application/json
 
 {
-  "id": "65bd727d277bce119e040cc0"
+  "id": "65bec4d5cddf216b0efae296"
 }
 
 ###
@@ -35,8 +35,8 @@ POST http://localhost:3000/api/users/login
 Content-Type: application/json
 
 {
-  "email": "test3@mail.com",
-  "password": "test3"
+  "email": "test7@mail.com",
+  "password": "test7"
 }
 
 ###
@@ -82,12 +82,12 @@ Content-Type: application/json
   "user": "65be4a113c4217b27382381d",
       "products": [
     {
-      "productId": "65be4ef5fd6804117d506ef8",
-      "quantity": 20
+      "productId": "65bfb101640e5574018ed29e",
+      "quantity": 0
     },
     {
-      "productId": "65be4ef7fd6804117d506efa",
-      "quantity": 20
+      "productId": "65bfb137643f542ecdfceee1",
+      "quantity": 0
     }
   ]
 }

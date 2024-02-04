@@ -12,9 +12,9 @@ router.get('/all', async (req,res) => {
 router.post('/add', async (req,res) => {
     const order = await OrderModel.create({
       user: req.body.user,
-      products: req.body.products,
+      products: req.body.products
     });
-
+    
     orderComplete = true;
 
     for (const orderedProducts of req.body.products) {
