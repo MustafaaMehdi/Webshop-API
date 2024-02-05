@@ -9,7 +9,7 @@ router.get('/all/:id', async (req,res) => {
     if (req.params.id === process.env.API_KEY) {
       const order = await OrderModel.find()
       res.status(201).json(order);
-    } else if (req.params.id !== process.env.API_KEY || !req.params.id) {
+    } else {
       return res
       .status(401)
       .json({ message: 'Resource not authorized' });

@@ -17,11 +17,10 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
 	try {
 		const product = await ProductModel.findOne({ _id: req.params.id });
-		if (!product) console.log('Error: product does not exists');
-		res.status(200).json(product);
+		if (!product) res.status(404).json({ message: 'Product not found' });
 	} catch (error) {
 		console.log('Error', error);
-		res.status(401).json({ message: 'Please provide a correct productID' });
+		res.status(404).json({ message: 'Please provide a correct productID' });
 	}
 });
 
@@ -34,7 +33,7 @@ router.post('/add', (req, res) => {
 					console.log(category);
 					if (!category) {
 						return res
-							.status(409)
+							.status(404)
 							.json({ message: 'Please select an existing category' });
 					} else {
 						const product = await ProductModel.create({
@@ -59,32 +58,18 @@ router.post('/add', (req, res) => {
 	}
 });
 
-
 router.get('/category/:id', async (req, res) => {
-  try {
-    const categories = await ProductModel.find({category: req.params.id});
-    if (categories.length < 1) {
-      res.status(404).json({message: 'No products in this category'});
-    } 
+	try {
+		const categories = await ProductModel.find({ category: req.params.id });
+		if (categories.length < 1) {
+			return res.status(404).json({ message: 'No products in this category' });
+		}
 
-    res.status(200).json(categories);
-    
-  } catch (error) {
-    console.log('error', error);
-    res.status(400).json({message: 'There was and error fetching products'})
-  }
-
+		res.status(200).json(categories);
+	} catch (error) {
+		console.log('error', error);
+		res.status(400).json({ message: 'There was and error fetching products' });
+	}
 });
-
-// if (req.body.token === process.env.TOKEN) {
-//   CategoryModel.find({category: req.body.category}).exec().then( category => {
-//     if (category.length < 1) {
-//       return res.status(409).json({message: 'Please select an existing category'})
-//     } else  {
-//       const product = await ProductModel.create(req.body);
-//       res.status(201).json(product);
-//     }
-//   })
-// }
 
 module.exports = router;

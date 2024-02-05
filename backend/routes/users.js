@@ -5,18 +5,28 @@ const bcrypt = require('bcrypt')
 
 /* GET users listing. */
 router.get('/', async (req, res) => {
-	const users = await UserModel.find().select('-password');
-	res.status(200).json(users);
+  try {
+    const users = await UserModel.find().select('-password -__v');
+    res.status(200).json(users);
+  } catch (error) {
+    console.log('Error', error);
+		res.status(401).json({ message: 'There was an error fetching users' });
+  }
 });
 
 router.post('/', async (req, res) => {
 	try {
-		// const id = req.body.id;
-		const user = await UserModel.findById({_id: req.body.id}); //kolla handledning sen om OK
-		res.status(200).json(user);
+    // if (req.body.id) {
+      const user = await UserModel.findById({_id: req.body.id}).exec().then(user =>{
+        if (user) {
+          res.status(200).json(user);
+        } else {
+          res.status(401).json({ message: 'User does not exist' });
+        }
+      })
 	} catch (error) {
 		console.log('Error', error);
-		res.status(401).json({ message: 'Please provide a correct userID' });
+		res.status(401).json({ message: 'Something went wrong, please try again and make sure to provide correct userId' });
 	}
 });
 
