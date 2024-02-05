@@ -82,12 +82,16 @@ Content-Type: application/json
   "user": "65be4a113c4217b27382381d",
       "products": [
     {
-      "productId": "65bfb101640e5574018ed29e",
-      "quantity": 0
+      "productId": "65bfe95ab1c76bbc30b8c3ee",
+      "quantity": 1
     },
     {
-      "productId": "65bfb137643f542ecdfceee1",
-      "quantity": 0
+      "productId": "65bfe98067de24e11f9de659",
+      "quantity": 1
+    },
+    {
+      "productId": "65bfe9a43d8fc5c0c7fc75e2",
+      "quantity": 1
     }
   ]
 }

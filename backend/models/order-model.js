@@ -16,9 +16,11 @@ const OrderSchema = mongoose.Schema({
                 required: true,
                 min: 1,
                 default: 1
-            }
+            },
+            _id: false
         }
     ]
 });
 
 module.exports = mongoose.model('order', OrderSchema);
+

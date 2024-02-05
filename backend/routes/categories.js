@@ -12,12 +12,7 @@ router.get('/', async (req, res) => {
     console.log('error', error);
     res.status(400).json({message: 'There was and error fetching products'})
   }
-
 });
-
-
-
-
 
 router.post('/add', async (req, res) => {
   try {
