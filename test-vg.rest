@@ -84,7 +84,7 @@ POST http://localhost:3000/api/categories/add
 Content-Type: application/json
 
 {
-  "name": "Kategori 99",
+  "name": "Kategori 100",
   "token": "1234key1234"
 }
 
@@ -105,7 +105,7 @@ GET http://localhost:3000/api/orders/all/secretKey1
 ###
 
 // HÄMTA ALLA ORDER, FEL KEY // SKALL MISSLYCKAS
-GET http://localhost:3000/api/orders/all/TESTMEDFELTOKEN
+GET http://localhost:3000/api/orders/all/test1
 
 ###
 

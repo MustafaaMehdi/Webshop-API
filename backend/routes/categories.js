@@ -39,7 +39,6 @@ router.post('/add', async (req, res) => {
     console.log('error', error);
 		res.status(401).json({ message: 'There was and error creating category' });
   }
-
 });
 
 

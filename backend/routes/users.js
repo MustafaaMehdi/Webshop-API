@@ -1,7 +1,9 @@
 var express = require('express');
 var router = express.Router();
 const UserModel = require('../models/user-model');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const cors = require('cors');
+
 
 /* GET users listing. */
 router.get('/', async (req, res) => {
@@ -62,23 +64,24 @@ router.post('/add', (req, res) => {
 
 router.post('/login', async (req, res) => {
   try {
-    const inputPassword = req.body.password;
-    await UserModel.findOne({ email: req.body.email }).exec()
-    .then(user => {
+    let inputPassword = req.body.password;
+    let user = await UserModel.findOne({ email: req.body.email }).exec()
       if (!user) {
         return res.status(404).json({
           message: 'User does not exist'
         })
       } 
-      bcrypt.compare(inputPassword, user.password, (err, result) => {
+      await bcrypt.compare(inputPassword, user.password, (err, result) => {
         if (err) {
           return res.status(401).json({
             message: 'Login failed'
           })
         }
         if (result) {
+          console.log("Login successful");
           return res.status(200).json({
-            message: 'Login success'
+            id: user._id,
+            name: user.name
           })
         } else if (!result) {
           return res.status(401).json({
@@ -86,7 +89,7 @@ router.post('/login', async (req, res) => {
           })
         }
       })
-    });
+
   } catch (error) {
     console.log('ERROR', error);
     res.status(500).json({error: 'something went wrong'})
@@ -94,3 +97,37 @@ router.post('/login', async (req, res) => {
 });
 
 module.exports = router;
+
+
+// router.post('/login', async (req, res) => {
+//   try {
+//     let inputPassword = req.body.password;
+//     let user = await UserModel.findOne({ email: req.body.email }).exec()
+//     .then(user => {
+//       if (!user) {
+//         return res.status(404).json({
+//           message: 'User does not exist'
+//         })
+//       } 
+//       bcrypt.compare(inputPassword, user.password, (err, result) => {
+//         if (err) {
+//           return res.status(401).json({
+//             message: 'Login failed'
+//           })
+//         }
+//         if (result) {
+//           return res.status(200).json({
+//             message: 'Login success'
+//           })
+//         } else if (!result) {
+//           return res.status(401).json({
+//             message: 'Login failed'
+//           })
+//         }
+//       })
+//     });
+//   } catch (error) {
+//     console.log('ERROR', error);
+//     res.status(500).json({error: 'something went wrong'})
+//   }
+// });
