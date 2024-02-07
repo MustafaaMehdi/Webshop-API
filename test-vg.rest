@@ -51,7 +51,7 @@ GET http://localhost:3000/api/products
 ###
 
 // HÄMTA SPECIFIK PRODUKT
-GET http://localhost:3000/api/products/65be4ef5f26804117d506ef8
+GET http://localhost:3000/api/products/65be4f366999f1b2d3927d29
 
 ###
 
@@ -60,8 +60,8 @@ POST http://localhost:3000/api/products/add
 Content-Type: application/json
 
 {
-  "name": "Produkt 24",
-  "description": "Beskrivning av produkt 24",
+  "name": "STAMO",
+  "description": "Beskrivning av produkt 30",
   "price": 300,
   "lager": 330,
   "category": "65bf95f8ab8ac299af37bbe8",
