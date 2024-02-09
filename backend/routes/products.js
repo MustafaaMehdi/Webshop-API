@@ -39,9 +39,10 @@ router.post('/add', async (req, res) => {
 					description: req.body.description,
 					price: req.body.price,
 					lager: req.body.lager,
-					category: req.body.category
+					category: req.body.category,
+	
 				})
-				const result = await product.save()
+				await product.save()
 				return res.status(201).json(product)
 			}
 		} else {

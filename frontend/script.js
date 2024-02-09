@@ -1,33 +1,32 @@
-
-const signupName = document.getElementById('signupName')
+const signupName = document.getElementById('signupName');
 const signupEmail = document.getElementById('signupEmail');
-const signupPassword = document.getElementById('signupPassword')
-const signupBtn = document.getElementById('signupBtn')
+const signupPassword = document.getElementById('signupPassword');
+const signupBtn = document.getElementById('signupBtn');
 
-const productName = document.getElementById('productName')
-const productDescription = document.getElementById('productDescription')
-const productPrice = document.getElementById('productPrice')
-const productStock = document.getElementById('productStock')
-const productCategory = document.getElementById('productCategory')
-const productKey = document.getElementById('productKey')
-const createProductBtn = document.getElementById('createProductBtn')
+const productName = document.getElementById('productName');
+const productDescription = document.getElementById('productDescription');
+const productPrice = document.getElementById('productPrice');
+const productStock = document.getElementById('productStock');
+const productCategory = document.getElementById('productCategory');
+const productKey = document.getElementById('productKey');
+const createProductBtn = document.getElementById('createProductBtn');
 
 const emailInput = document.getElementById('emailInput');
 const passwordInput = document.getElementById('passwordInput');
 const loginBtn = document.getElementById('loginBtn');
 const logoutBtn = document.getElementById('logoutBtn');
 
-const allUsersContainer = document.getElementById('allUsersContainer')
-const getAllUsersBtn = document.getElementById('getAllUsersBtn')
+const allUsersContainer = document.getElementById('allUsersContainer');
+const getAllUsersBtn = document.getElementById('getAllUsersBtn');
 
-const allProductsContainer = document.getElementById('allProductsContainer')
-const getAllProductsBtn = document.getElementById('getAllProductsBtn')
+const allProductsContainer = document.getElementById('allProductsContainer');
+const productContainer = document.getElementById('productContainer');
 
-const cartContainer = document.getElementById('cartContainer')
-const productsInCart = document.getElementById('productsInCart')
-const orderBtn = document.getElementById('orderBtn')
-
-
+const cartContainer = document.getElementById('cartContainer');
+const productsInCart = document.getElementById('productsInCart');
+const orderBtn = document.getElementById('orderBtn');
+const getOrdersBtn = document.getElementById('getOrdersBtn')
+const allOrders = document.getElementById('allOrders')
 if (localStorage.getItem('loggedInUser')) {
 	//Is logged in
 	console.log('logged in');
@@ -36,21 +35,20 @@ if (localStorage.getItem('loggedInUser')) {
 	console.log('logged out');
 }
 
-signupBtn.addEventListener('click', signupUser)
+signupBtn.addEventListener('click', signupUser);
 loginBtn.addEventListener('click', loginUser);
 logoutBtn.addEventListener('click', logoutUser);
-getAllUsersBtn.addEventListener('click', getAllUser)
-getAllProductsBtn.addEventListener('click', getAllProducts)
-createProductBtn.addEventListener('click', createProduct)
-
-let cartIndex = []
+getAllUsersBtn.addEventListener('click', getAllUser);
+getOrdersBtn.addEventListener('click', getAllOrders)
+const productIndex = [];
+let cartIndex = [];
 
 function signupUser() {
-    let sendUser = { 
-        name: signupName.value,
-        email: signupEmail.value, 
-        password: signupPassword.value 
-    };
+	let sendUser = {
+		name: signupName.value,
+		email: signupEmail.value,
+		password: signupPassword.value,
+	};
 
 	fetch('http://localhost:3000/api/users/add', {
 		method: 'POST',
@@ -66,10 +64,10 @@ function signupUser() {
 }
 
 function loginUser() {
-	let sendUser = { 
-        email: emailInput.value, 
-        password: passwordInput.value 
-    };
+	let sendUser = {
+		email: emailInput.value,
+		password: passwordInput.value,
+	};
 
 	fetch('http://localhost:3000/api/users/login', {
 		method: 'POST',
@@ -93,19 +91,17 @@ function logoutUser() {
 	localStorage.removeItem('loggedInUser');
 }
 
-
 //PRODUKTER
 
 function createProduct() {
-    let sendProduct = { 
-        name: productName.value,
-        description: productDescription.value, 
-        price: productPrice.value,
-        lager: productStock.value,
-        category: productCategory.value,
-        token: productKey.value
-
-    };
+	let sendProduct = {
+		name: productName.value,
+		description: productDescription.value,
+		price: productPrice.value,
+		lager: productStock.value,
+		category: productCategory.value,
+		token: productKey.value,
+	};
 
 	fetch('http://localhost:3000/api/products/add', {
 		method: 'POST',
@@ -117,98 +113,246 @@ function createProduct() {
 		.then((res) => res.json())
 		.then((createdProduct) => {
 			console.log('Post user', createdProduct);
-			// if (data.id) {
-			// 	localStorage.setItem('loggedInUser', data.id);
-			// } else {
-			// 	console.log('STOP wrong user data');
-			// }
 		});
 }
 
-
 function getAllUser() {
-    fetch('http://localhost:3000/api/users', {
-        method: 'GET'
-    })
-    .then((res) => res.json())
-    .then((users) => {
-        allUsersContainer.innerText=""
-        for (let user of users) {
-            allUsersContainer.innerHTML += `<div>${user.name} <button id="${user._id}">See user</button></div>`;
-        }
+	fetch('http://localhost:3000/api/users', {
+		method: 'GET',
+	})
+		.then((res) => res.json())
+		.then((users) => {
+			allUsersContainer.innerText = '';
 
-        for (let user of users) {
-            let button = document.getElementById(user._id);
-            button.addEventListener('click', () => {
-                let specificId = {
-                    id: user._id
-                };
+            const userSelect = document.createElement('select');
+            allUsersContainer.appendChild(userSelect);
+            const userDefault = document.createElement('option');
 
-                fetch(`http://localhost:3000/api/users`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(specificId),                })
-                .then((res) => res.json())
-                .then((specificUser) => {
-                    console.log('Specific user:', specificUser);
-                });
+            userDefault.value = 'Select user';
+            userDefault.text = 'Select user';
+            userSelect.appendChild(userDefault);
+
+            const showUser = document.createElement('button')
+            showUser.innerText = 'Display user info'
+            allUsersContainer.appendChild(showUser)
+
+            for (let user of users) {
+                const userOption = document.createElement('option');
+                userOption.value = user._id;
+                userOption.text = user.name;
+                userSelect.appendChild(userOption);
+                localStorage.setItem(user._id, JSON.stringify(user));
+            }
+
+            showUser.addEventListener('click', () => {
+                const selectedUserId = userSelect.value;
+                const selectedUser = JSON.parse(localStorage.getItem(selectedUserId));
+                console.log('Selected user:', selectedUser);
             });
-        }
-        
-    });
+
+			
+		});
 }
 
 function getAllProducts() {
-    fetch('http://localhost:3000/api/products', {
-        method: 'GET'
-    })
-    .then((res) => res.json())
-    .then((products) => {
-        allProductsContainer.innerText=""
-        for (let product of products) {
-            allProductsContainer.innerHTML += `<div>${product.name} <button id="articleDescription${product._id}">See Description</button><button id="articleAdd${product._id}">Add product to cart</button></div>`;
-        }
+	fetch('http://localhost:3000/api/products', {
+		method: 'GET',
+	})
+		.then((res) => res.json())
+		.then((products) => {
+            productContainer.innerText = ''
+			products.map((product) => {
+				const productArticle = document.createElement('article');
+				productArticle.className = 'productArticle';
+				productArticle.id = 'productArticle';
+				productContainer.appendChild(productArticle);
 
-        for (let product of products) {
-            let button = document.getElementById(`articleDescription${product._id}`);
-            button.addEventListener('click', (e) => {
-                let filteredID = e.target.id.replace('articleDescription', '')
-                fetch(`http://localhost:3000/api/products/${filteredID}`, {
-                    method: 'GET',
-         })
-                .then((res) => res.json())
-                .then((specificProduct) => {
-                    console.log('Specific product:', specificProduct.product.name, specificProduct.product.description);
-                });
-            });
-        }
-        for (let product of products) {
-            let addButton = document.getElementById(`articleAdd${product._id}`);
-            addButton.addEventListener('click', (e) => {
-                let filteredID = e.target.id.replace('articleAdd', '')
-                fetch(`http://localhost:3000/api/products/${filteredID}`, {
-                    method: 'GET',
-         })
-                .then((res) => res.json())
-                .then((product) => {
-                    console.log('Specific product:', product.product.name, product.product.description);
-            const productInCart = cartIndex.find(item => item._id === product.product._id);
+				const articleTitle = document.createElement('h3');
+				articleTitle.className = 'articleTitle';
+				productArticle.appendChild(articleTitle);
+				articleTitle.innerHTML = product.name;
 
-            if (productInCart) {
-                productInCart.quantity += 1;
-            } else {
-                cartIndex.push({
-                    _id: product.product._id,
-                    quantity: 1
-                });
+				const articlePrice = document.createElement('p');
+				articlePrice.className = 'articlePrice';
+				productArticle.appendChild(articlePrice);
+				articlePrice.innerText = product.price + ' Sek';
+
+				const articleBtn = document.createElement('div');
+				articleBtn.className = 'articleBtn';
+				productArticle.appendChild(articleBtn);
+
+				const removeFromCartBtn = document.createElement('button');
+				removeFromCartBtn.id = `${product._id}`;
+				removeFromCartBtn.className = 'removeFromCartBtn';
+				removeFromCartBtn.innerText = '-';
+				articleBtn.appendChild(removeFromCartBtn);
+
+                const addToCartBtn = document.createElement('button');
+				addToCartBtn.id = `${product._id}`;
+				addToCartBtn.innerText = '+';
+				addToCartBtn.className = 'addToCartBtn';
+				articleBtn.appendChild(addToCartBtn);
+
+				const articleAmount = document.createElement('p');
+				articleAmount.id = `${product._id}1`;
+				articleAmount.className = 'articleAmount';
+				articleAmount.innerText = 0;
+				articleBtn.appendChild(articleAmount);
+
+                const productStock = document.createElement('span')
+                productStock.id = `${product.lager}2`
+                productStock.innerText = `In stock ${product.lager}`
+                articleBtn.appendChild(productStock)
+
+
+
+				removeFromCartBtn.addEventListener('click', () =>
+					removeFromCart(product, articleAmount, productStock)
+				);
+				addToCartBtn.addEventListener('click', () =>
+					addToCart(product, articleAmount, productStock)
+				);
+			});
+		});
+}
+getAllProducts();
+
+
+function removeFromCart(product, articleAmount) {
+	const productAdded = cartIndex.find((article) => article._id === product._id);
+	if (productAdded) {
+		if (productAdded.quantity === 1) {
+			const productRemoved = cartIndex.findIndex(
+				(article) => article._id === product._id
+			);
+			cartIndex.splice(productRemoved, 1);
+			articleAmount.innerText = 0;
+		} else {
+			productAdded.quantity -= 1;
+			console.log(productAdded);
+			articleAmount.innerText = productAdded.quantity;
+		}
+	} else if (!productAdded) {
+		console.log('Product not in cart');
+	}
+	console.log(cartIndex);
+
+	productsInCart.innerText = '';
+	printCart();
+}
+
+function addToCart(product, articleAmount) {
+	const productAdded = cartIndex.find((article) => article._id === product._id);
+	if (productAdded) {
+        productStock.lager -= 1;
+		productAdded.quantity += 1;
+        productStock.innerText = productStock.lager
+		console.log(productAdded);
+		articleAmount.innerText = productAdded.quantity;
+	} else if (!productAdded) {
+		cartIndex.push({
+			_id: product._id,
+			name: product.name,
+			price: product.price,
+			quantity: 1,
+
+		});
+		console.log(cartIndex);
+		articleAmount.innerText = 1;
+	}
+
+	productsInCart.innerText = '';
+	printCart();
+}
+
+function printCart() {
+	cartIndex.forEach((product) => {
+		if (product.quantity >= 1) {
+			articleInCart = document.createElement('article');
+			articleInCart.innerText = '';
+			articleInCart.className = 'articleInCart';
+			productsInCart.appendChild(articleInCart);
+
+			articleInCartTitle = document.createElement('p');
+			articleInCartTitle.innerText = product.name;
+			articleInCart.appendChild(articleInCartTitle);
+
+			articleInCartAmount = document.createElement('p');
+			articleInCartAmount.innerText = product.quantity;
+			articleInCart.appendChild(articleInCartAmount);
+		}
+	});
+}
+
+orderBtn.addEventListener('click', sendOrder)
+
+function sendOrder() {
+    const loggedInUserId = localStorage.getItem('loggedInUser');
+
+    if (!loggedInUserId) {
+        console.log('User not logged in');
+        return
+    }
+    if (cartIndex.length < 1) {
+        console.log('No products in cart');
+        return
+    }
+    let ordersInCart = {
+        user: loggedInUserId,
+        products: cartIndex.map((product) =>({
+            productId: product._id,
+            quantity: product.quantity
+        }))
+    }
+
+	fetch('http://localhost:3000/api/orders/add', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(ordersInCart),
+	})
+		.then((res) => res.json())
+		.then((order) => {
+			console.log('Order added!', order);
+		});
+        cartIndex = [];
+        getAllProducts();
+        productsInCart.innerText = ''
+}
+
+
+
+function getAllOrders() {
+	fetch('http://localhost:3000/api/orders/all/secretKey1', {
+		method: 'GET',
+	})
+		.then((res) => res.json())
+		.then((orders) => {
+
+            const orderSelect = document.createElement('select');
+            allOrders.appendChild(orderSelect);
+            const ordersDefault = document.createElement('option');
+
+            ordersDefault.value = 'Select order';
+            ordersDefault.text = 'Select order';
+            orderSelect.appendChild(ordersDefault);
+
+            const showOrder = document.createElement('button')
+            showOrder.innerText = 'Display user info'
+            allOrders.appendChild(showOrder)
+
+            for (let order of orders) {
+                const orderOption = document.createElement('option');
+                orderOption.value = order._id;
+                orderOption.text = order._id;
+                orderSelect.appendChild(orderOption);
+                localStorage.setItem(order._id, JSON.stringify(order));
             }
-                    
-                    productsInCart.innerHTML += `<h3>${product.product.name}</h3>`
-                });
-            });
-        }
-        
-    });
+
+            showOrder.addEventListener('click', () => {
+                const selectedOrderId = orderSelect.value;
+                const selectedOrder = JSON.parse(localStorage.getItem(selectedOrderId));
+                console.log('Selected user:', selectedOrder._id);
+            });		});
 }

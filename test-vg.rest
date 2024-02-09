@@ -60,12 +60,13 @@ POST http://localhost:3000/api/products/add
 Content-Type: application/json
 
 {
-  "name": "STAMO",
+  "name": "DYYYYYYYYY",
   "description": "Beskrivning av produkt 30",
   "price": 300,
   "lager": 330,
   "category": "65bf95f8ab8ac299af37bbe8",
   "token": "1234key1234"
+  
 }
 
 ###
