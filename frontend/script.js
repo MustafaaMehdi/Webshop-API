@@ -11,9 +11,7 @@ const productCategory = document.getElementById('productCategory');
 const productKey = document.getElementById('productKey');
 const createProductBtn = document.getElementById('createProductBtn');
 
-const emailInput = document.getElementById('emailInput');
-const passwordInput = document.getElementById('passwordInput');
-const loginBtn = document.getElementById('loginBtn');
+
 const logoutBtn = document.getElementById('logoutBtn');
 
 const allUsersContainer = document.getElementById('allUsersContainer');
@@ -25,23 +23,70 @@ const productContainer = document.getElementById('productContainer');
 const cartContainer = document.getElementById('cartContainer');
 const productsInCart = document.getElementById('productsInCart');
 const orderBtn = document.getElementById('orderBtn');
-const getOrdersBtn = document.getElementById('getOrdersBtn')
-const allOrders = document.getElementById('allOrders')
-if (localStorage.getItem('loggedInUser')) {
-	//Is logged in
-	console.log('logged in');
-} else {
-	//Not logged in
-	console.log('logged out');
+const getOrdersBtn = document.getElementById('getOrdersBtn');
+const allOrders = document.getElementById('allOrders');
+const logoutSection = document.getElementById('logoutSection');
+const loginPage = document.getElementById('loginPage');
+
+function checkLoginState() {
+	if (localStorage.getItem('loggedInUser')) {
+		//Is logged in
+        loginPage.innerText = ''
+		console.log('logged in');
+		const logoutBtn = document.createElement('button');
+		logoutBtn.id = 'logoutBtn';
+		logoutBtn.className = 'logoutBtn';
+		logoutBtn.innerText = 'Sign out';
+		loginPage.appendChild(logoutBtn);
+        logoutBtn.addEventListener('click', logoutUser)
+
+	} else {
+		//Not logged in
+        loginPage.innerText = ''
+        const emailLable = document.createElement('label')
+        emailLable.className = 'emailLable'
+        emailLable.innerText = 'E-mail address'
+        loginPage.appendChild(emailLable)
+
+        const emailInput = document.createElement('input');
+        emailInput.type = 'text'
+		emailInput.id = 'emailInput';
+		emailInput.className = 'emailInput';
+        emailInput.placeholder = 'Email@example.com'
+		emailLable.appendChild(emailInput);
+        const passwordLabel = document.createElement('label')
+        passwordLabel.className = 'emailLable'
+        passwordLabel.innerText = 'Password'
+        loginPage.appendChild(passwordLabel)
+
+        const passwordInput = document.createElement('input');
+        passwordInput.type = 'password'
+		passwordInput.id = 'passwordInput';
+		passwordInput.className = 'passwordInput';
+		passwordLabel.appendChild(passwordInput);
+
+        const loginBtn = document.createElement('button');
+		loginBtn.id = 'loginBtn';
+		loginBtn.className = 'loginBtn';
+        loginBtn.innerText = 'Sign in'
+		loginPage.appendChild(loginBtn);
+
+        loginBtn.addEventListener('click', () => loginUser(emailInput, passwordInput));
+	}
+}
+checkLoginState()
+
+function logoutUser() {
+	localStorage.removeItem('loggedInUser');
+    checkLoginState()
 }
 
 signupBtn.addEventListener('click', signupUser);
-loginBtn.addEventListener('click', loginUser);
 logoutBtn.addEventListener('click', logoutUser);
 getAllUsersBtn.addEventListener('click', getAllUser);
-getOrdersBtn.addEventListener('click', getAllOrders)
+getOrdersBtn.addEventListener('click', getAllOrders);
 const productIndex = [];
-let cartIndex = [];
+let Index = [];
 
 function signupUser() {
 	let sendUser = {
@@ -63,7 +108,7 @@ function signupUser() {
 		});
 }
 
-function loginUser() {
+function loginUser(emailInput, passwordInput) {
 	let sendUser = {
 		email: emailInput.value,
 		password: passwordInput.value,
@@ -81,14 +126,12 @@ function loginUser() {
 			console.log('Post user', user);
 			if (user.id) {
 				localStorage.setItem('loggedInUser', user.id);
+				// localStorage.setItem('cart', JSON.stringify());
+                checkLoginState()
 			} else {
 				console.log('STOP wrong user data');
 			}
 		});
-}
-
-function logoutUser() {
-	localStorage.removeItem('loggedInUser');
 }
 
 //PRODUKTER
@@ -124,33 +167,31 @@ function getAllUser() {
 		.then((users) => {
 			allUsersContainer.innerText = '';
 
-            const userSelect = document.createElement('select');
-            allUsersContainer.appendChild(userSelect);
-            const userDefault = document.createElement('option');
+			const userSelect = document.createElement('select');
+			allUsersContainer.appendChild(userSelect);
+			const userDefault = document.createElement('option');
 
-            userDefault.value = 'Select user';
-            userDefault.text = 'Select user';
-            userSelect.appendChild(userDefault);
+			userDefault.value = 'Select user';
+			userDefault.text = 'Select user';
+			userSelect.appendChild(userDefault);
 
-            const showUser = document.createElement('button')
-            showUser.innerText = 'Display user info'
-            allUsersContainer.appendChild(showUser)
+			const showUser = document.createElement('button');
+			showUser.innerText = 'Display user info';
+			allUsersContainer.appendChild(showUser);
 
-            for (let user of users) {
-                const userOption = document.createElement('option');
-                userOption.value = user._id;
-                userOption.text = user.name;
-                userSelect.appendChild(userOption);
-                localStorage.setItem(user._id, JSON.stringify(user));
-            }
+			for (let user of users) {
+				const userOption = document.createElement('option');
+				userOption.value = user._id;
+				userOption.text = user.name;
+				userSelect.appendChild(userOption);
+				localStorage.setItem(user._id, JSON.stringify(user));
+			}
 
-            showUser.addEventListener('click', () => {
-                const selectedUserId = userSelect.value;
-                const selectedUser = JSON.parse(localStorage.getItem(selectedUserId));
-                console.log('Selected user:', selectedUser);
-            });
-
-			
+			showUser.addEventListener('click', () => {
+				const selectedUserId = userSelect.value;
+				const selectedUser = JSON.parse(localStorage.getItem(selectedUserId));
+				console.log('Selected user:', selectedUser);
+			});
 		});
 }
 
@@ -160,22 +201,36 @@ function getAllProducts() {
 	})
 		.then((res) => res.json())
 		.then((products) => {
-            productContainer.innerText = ''
+			productContainer.innerText = '';
 			products.map((product) => {
 				const productArticle = document.createElement('article');
 				productArticle.className = 'productArticle';
 				productArticle.id = 'productArticle';
 				productContainer.appendChild(productArticle);
 
+				const articleImage = document.createElement('img');
+				articleImage.class = 'articleImage';
+				articleImage.id = 'articleImage';
+				articleImage.setAttribute('src', 'Assets/exampleImg.webp');
+				articleImage.setAttribute('width', '300');
+				articleImage.setAttribute('height', '300');
+				articleImage.setAttribute('alt', `Description of ${product.name}`);
+				productArticle.appendChild(articleImage);
+
 				const articleTitle = document.createElement('h3');
 				articleTitle.className = 'articleTitle';
 				productArticle.appendChild(articleTitle);
 				articleTitle.innerHTML = product.name;
 
+                const articleCategory = document.createElement('p');
+				articleCategory.className = 'articleTitle';
+				productArticle.appendChild(articleCategory);
+				articleCategory.innerHTML = `Category: ${product.category}`;
+
 				const articlePrice = document.createElement('p');
 				articlePrice.className = 'articlePrice';
 				productArticle.appendChild(articlePrice);
-				articlePrice.innerText = product.price + ' Sek';
+				articlePrice.innerText = `${product.price} Sek`;
 
 				const articleBtn = document.createElement('div');
 				articleBtn.className = 'articleBtn';
@@ -187,7 +242,7 @@ function getAllProducts() {
 				removeFromCartBtn.innerText = '-';
 				articleBtn.appendChild(removeFromCartBtn);
 
-                const addToCartBtn = document.createElement('button');
+				const addToCartBtn = document.createElement('button');
 				addToCartBtn.id = `${product._id}`;
 				addToCartBtn.innerText = '+';
 				addToCartBtn.className = 'addToCartBtn';
@@ -199,12 +254,10 @@ function getAllProducts() {
 				articleAmount.innerText = 0;
 				articleBtn.appendChild(articleAmount);
 
-                const productStock = document.createElement('span')
-                productStock.id = `${product.lager}2`
-                productStock.innerText = `In stock ${product.lager}`
-                articleBtn.appendChild(productStock)
-
-
+				const productStock = document.createElement('span');
+				productStock.id = `${product.lager}2`;
+				productStock.innerText = `In stock ${product.lager}`;
+				articleBtn.appendChild(productStock);
 
 				removeFromCartBtn.addEventListener('click', () =>
 					removeFromCart(product, articleAmount, productStock)
@@ -217,56 +270,69 @@ function getAllProducts() {
 }
 getAllProducts();
 
+function removeFromCart(product, articleAmount, productStock) {
+	const cart = JSON.parse(localStorage.getItem('cart')) || [];
+	const productAdded = cart.find((article) => article._id === product._id);
 
-function removeFromCart(product, articleAmount) {
-	const productAdded = cartIndex.find((article) => article._id === product._id);
 	if (productAdded) {
 		if (productAdded.quantity === 1) {
-			const productRemoved = cartIndex.findIndex(
+			const productRemovedIndex = cart.findIndex(
 				(article) => article._id === product._id
 			);
-			cartIndex.splice(productRemoved, 1);
+			cart.splice(productRemovedIndex, 1);
 			articleAmount.innerText = 0;
+			productStock.innerText = `In stock ${product.lager}`;
+			console.log(productAdded);
 		} else {
 			productAdded.quantity -= 1;
-			console.log(productAdded);
 			articleAmount.innerText = productAdded.quantity;
+			productStock.innerText = `In stock ${
+				product.lager - productAdded.quantity
+			}`;
 		}
-	} else if (!productAdded) {
+	} else {
 		console.log('Product not in cart');
 	}
-	console.log(cartIndex);
+	console.log(cart);
+	localStorage.setItem('cart', JSON.stringify(cart));
 
 	productsInCart.innerText = '';
 	printCart();
 }
 
-function addToCart(product, articleAmount) {
-	const productAdded = cartIndex.find((article) => article._id === product._id);
+function addToCart(product, articleAmount, productStock) {
+	const cart = JSON.parse(localStorage.getItem('cart')) || [];
+	const productAdded = cart.find((article) => article._id === product._id);
+
 	if (productAdded) {
-        productStock.lager -= 1;
+		productStock.lager -= 1;
 		productAdded.quantity += 1;
-        productStock.innerText = productStock.lager
 		console.log(productAdded);
 		articleAmount.innerText = productAdded.quantity;
-	} else if (!productAdded) {
-		cartIndex.push({
+		productStock.innerText = `In stock ${
+			product.lager - productAdded.quantity
+		}`;
+	} else {
+		cart.push({
 			_id: product._id,
 			name: product.name,
 			price: product.price,
 			quantity: 1,
-
 		});
-		console.log(cartIndex);
+		console.log(cart);
 		articleAmount.innerText = 1;
+		productStock.innerText = `In stock ${product.lager - 1}`;
 	}
+	localStorage.setItem('cart', JSON.stringify(cart));
 
 	productsInCart.innerText = '';
 	printCart();
 }
 
 function printCart() {
-	cartIndex.forEach((product) => {
+	const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+	cart.forEach((product) => {
 		if (product.quantity >= 1) {
 			articleInCart = document.createElement('article');
 			articleInCart.innerText = '';
@@ -284,26 +350,28 @@ function printCart() {
 	});
 }
 
-orderBtn.addEventListener('click', sendOrder)
+orderBtn.addEventListener('click', sendOrder);
 
 function sendOrder() {
-    const loggedInUserId = localStorage.getItem('loggedInUser');
+	const loggedInUserId = localStorage.getItem('loggedInUser');
+	const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-    if (!loggedInUserId) {
-        console.log('User not logged in');
-        return
-    }
-    if (cartIndex.length < 1) {
-        console.log('No products in cart');
-        return
-    }
-    let ordersInCart = {
-        user: loggedInUserId,
-        products: cartIndex.map((product) =>({
-            productId: product._id,
-            quantity: product.quantity
-        }))
-    }
+	if (!loggedInUserId) {
+		console.log('Please log in to complete the order');
+		return;
+	}
+	if (cart.length < 1) {
+		console.log('No products in the cart');
+		return;
+	}
+
+	let ordersInCart = {
+		user: loggedInUserId,
+		products: cart.map((product) => ({
+			productId: product._id,
+			quantity: product.quantity,
+		})),
+	};
 
 	fetch('http://localhost:3000/api/orders/add', {
 		method: 'POST',
@@ -316,12 +384,11 @@ function sendOrder() {
 		.then((order) => {
 			console.log('Order added!', order);
 		});
-        cartIndex = [];
-        getAllProducts();
-        productsInCart.innerText = ''
+
+	localStorage.removeItem('cart');
+	productsInCart.innerText = '';
+	getAllProducts();
 }
-
-
 
 function getAllOrders() {
 	fetch('http://localhost:3000/api/orders/all/secretKey1', {
@@ -329,30 +396,36 @@ function getAllOrders() {
 	})
 		.then((res) => res.json())
 		.then((orders) => {
+			const orderSelect = document.createElement('select');
+			allOrders.appendChild(orderSelect);
+			const ordersDefault = document.createElement('option');
 
-            const orderSelect = document.createElement('select');
-            allOrders.appendChild(orderSelect);
-            const ordersDefault = document.createElement('option');
+			ordersDefault.value = 'Select order';
+			ordersDefault.text = 'Select order';
+			orderSelect.appendChild(ordersDefault);
 
-            ordersDefault.value = 'Select order';
-            ordersDefault.text = 'Select order';
-            orderSelect.appendChild(ordersDefault);
+			const showOrder = document.createElement('button');
+			showOrder.innerText = 'Display user info';
+			allOrders.appendChild(showOrder);
 
-            const showOrder = document.createElement('button')
-            showOrder.innerText = 'Display user info'
-            allOrders.appendChild(showOrder)
+            localStorage.setItem('allOrders', JSON.stringify([]));
 
-            for (let order of orders) {
-                const orderOption = document.createElement('option');
-                orderOption.value = order._id;
-                orderOption.text = order._id;
-                orderSelect.appendChild(orderOption);
-                localStorage.setItem(order._id, JSON.stringify(order));
-            }
+			for (let order of orders) {
+				const orderOption = document.createElement('option');
+				orderOption.value = order._id;
+				orderOption.text = order._id;
+				orderSelect.appendChild(orderOption);
+				localStorage.setItem('allOrders', JSON.stringify(orders));
+			}
 
-            showOrder.addEventListener('click', () => {
+			showOrder.addEventListener('click', () => {
                 const selectedOrderId = orderSelect.value;
-                const selectedOrder = JSON.parse(localStorage.getItem(selectedOrderId));
-                console.log('Selected user:', selectedOrder._id);
-            });		});
+                const selectedOrder = JSON.parse(localStorage.getItem('allOrders')).find(order => order._id === selectedOrderId);
+                if (selectedOrder) {
+                    console.log('Selected user ID:', (selectedOrder.products));
+                } else {
+                    console.log('Order not found');
+                }
+			});
+		});
 }
