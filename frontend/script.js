@@ -169,8 +169,9 @@ function addNewProduct(adminToolContainer) {
 
     const addProductBtn = document.createElement('button')
     addProductBtn.innerText = 'Add product'
+    adminToolContainer.appendChild(addProductBtn)
 
-    addProductBtn.addEventListener('click', createProduct)
+    addProductBtn.addEventListener('click', () => createProduct())
 }
 
 
