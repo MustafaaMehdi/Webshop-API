@@ -1,3 +1,38 @@
 body {
-    background-color: rgb(48, 48, 51);
+    background-color: rgb(169, 169, 173);
+}
+
+.signupPage, .loginPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    input {
+        width: 50%;
+        border: none
+    }
+    .signupBtn, .loginBtn {
+        height: 50px;
+        width: 100px;
+        border-radius: 5px;
+        border: solid 1px rgb(255, 255, 255)
+    }
+   .signupBtn:hover, .loginBtn:hover {
+        border: solid 1px rgb(167, 167, 247);
+        background-color: aliceblue;
+    }
+    input:focus, .signupBtn:active, .loginBtn:active {
+        background-color: azure;
+        border: none;
+    }
+}
+
+.allProducts {
+    .productContainer {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin: 2rem;
+        position: relative;
+    }
 }

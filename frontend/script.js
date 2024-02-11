@@ -11,6 +11,7 @@ const productCategory = document.getElementById('productCategory');
 const productKey = document.getElementById('productKey');
 const createProductBtn = document.getElementById('createProductBtn');
 
+const categoryFilter = document.getElementById('categoryFiter')
 
 const logoutBtn = document.getElementById('logoutBtn');
 
@@ -201,8 +202,13 @@ function getAllProducts() {
 	})
 		.then((res) => res.json())
 		.then((products) => {
+            
 			productContainer.innerText = '';
 			products.map((product) => {
+                const cart = JSON.parse(localStorage.getItem('cart')) || []; 
+                const productAdded = cart.find((article) => article._id === product._id);
+
+
 				const productArticle = document.createElement('article');
 				productArticle.className = 'productArticle';
 				productArticle.id = 'productArticle';
@@ -248,16 +254,28 @@ function getAllProducts() {
 				addToCartBtn.className = 'addToCartBtn';
 				articleBtn.appendChild(addToCartBtn);
 
+
 				const articleAmount = document.createElement('p');
 				articleAmount.id = `${product._id}1`;
 				articleAmount.className = 'articleAmount';
-				articleAmount.innerText = 0;
+
 				articleBtn.appendChild(articleAmount);
+                
 
 				const productStock = document.createElement('span');
 				productStock.id = `${product.lager}2`;
-				productStock.innerText = `In stock ${product.lager}`;
+
 				articleBtn.appendChild(productStock);
+
+                if (productAdded) {
+                    articleAmount.innerText = `In cart ${productAdded.quantity}`;
+                    productStock.innerText = `In stock ${
+                        product.lager - productAdded.quantity
+                    }`;
+                } else { 
+                    articleAmount.innerText = 'In cart: 0';
+                    productStock.innerText = `In stock ${product.lager}`;
+                }
 
 				removeFromCartBtn.addEventListener('click', () =>
 					removeFromCart(product, articleAmount, productStock)
@@ -270,22 +288,171 @@ function getAllProducts() {
 }
 getAllProducts();
 
+function getallCategories() {
+    fetch('http://localhost:3000/api/categories', {
+		method: 'GET',
+	})
+		.then((res) => res.json())
+		.then((categories) => {
+			categoryFilter.innerText = '';
+			const categorySelect = document.createElement('select');
+			categoryFilter.appendChild(categorySelect);
+			const categoryDefault = document.createElement('option');
+
+			categoryDefault.value = 'Select category';
+			categoryDefault.text = 'Select category';
+			categorySelect.appendChild(categoryDefault);
+
+			const showCategoryProductsBtn = document.createElement('button');
+			showCategoryProductsBtn.innerText = 'Display products in category';
+            showCategoryProductsBtn.setAttribute('disabled', '')
+			categoryFilter.appendChild(showCategoryProductsBtn);
+
+            localStorage.setItem('categories', JSON.stringify([]));
+
+			for (let category of categories) {
+				const categoryOption = document.createElement('option');
+				categoryOption.value = category._id;
+				categoryOption.text = category.name;
+				categorySelect.appendChild(categoryOption);
+				localStorage.setItem('allOrders', JSON.stringify(category));
+			}
+
+            
+            categorySelect.addEventListener('change', () =>
+					activateShowCategory(categorySelect, showCategoryProductsBtn)
+				);
+            showCategoryProductsBtn.addEventListener('click', () =>
+					showCategory(categorySelect)
+				);
+		});
+}
+getallCategories()
+
+function activateShowCategory(categorySelect, showCategoryProductsBtn) {
+    if (categorySelect.value !== 'Select category') {
+        showCategoryProductsBtn.removeAttribute('disabled');
+    } else {
+        showCategoryProductsBtn.setAttribute('disabled', '');
+    }
+}
+
+function showCategory(categorySelect) {
+    const existingMessage = document.getElementById('categoryErrorMessage');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
+    const categoryMessage = document.createElement('span');
+    categoryMessage.id = 'categoryErrorMessage';
+
+        fetch(`http://localhost:3000/api/products/category/${categorySelect.value}`, {
+            method: 'GET',
+        })
+            .then((res => {
+
+                if (res.status !== 200) {
+                    categoryMessage.innerText = 'No products in this category'
+                    categoryFiter.appendChild(categoryMessage)
+
+                    throw new Error('No products in this category');
+                }
+                return res.json()
+            }))
+            .then((filteredProducts) => {
+
+                productContainer.innerText = '';
+                filteredProducts.map((product) => {
+                    const productArticle = document.createElement('article');
+                    productArticle.className = 'productArticle';
+                    productArticle.id = 'productArticle';
+                    productContainer.appendChild(productArticle);
+    
+    
+                    const articleImage = document.createElement('img');
+                    articleImage.class = 'articleImage';
+                    articleImage.id = 'articleImage';
+                    articleImage.setAttribute('src', 'Assets/exampleImg.webp');
+                    articleImage.setAttribute('width', '300');
+                    articleImage.setAttribute('height', '300');
+                    articleImage.setAttribute('alt', `Description of ${product.name}`);
+                    productArticle.appendChild(articleImage);
+    
+                    const articleTitle = document.createElement('h3');
+                    articleTitle.className = 'articleTitle';
+                    productArticle.appendChild(articleTitle);
+                    articleTitle.innerHTML = product.name;
+    
+                    const articleCategory = document.createElement('p');
+                    articleCategory.className = 'articleTitle';
+                    productArticle.appendChild(articleCategory);
+                    articleCategory.innerHTML = `Category: ${product.category}`;
+    
+                    const articlePrice = document.createElement('p');
+                    articlePrice.className = 'articlePrice';
+                    productArticle.appendChild(articlePrice);
+                    articlePrice.innerText = `${product.price} Sek`;
+    
+                    const articleBtn = document.createElement('div');
+                    articleBtn.className = 'articleBtn';
+                    productArticle.appendChild(articleBtn);
+    
+                    const removeFromCartBtn = document.createElement('button');
+                    removeFromCartBtn.id = `${product._id}`;
+                    removeFromCartBtn.className = 'removeFromCartBtn';
+                    removeFromCartBtn.innerText = '-';
+                    articleBtn.appendChild(removeFromCartBtn);
+    
+                    const addToCartBtn = document.createElement('button');
+                    addToCartBtn.id = `${product._id}`;
+                    addToCartBtn.innerText = '+';
+                    addToCartBtn.className = 'addToCartBtn';
+                    articleBtn.appendChild(addToCartBtn);
+    
+                    const articleAmount = document.createElement('p');
+                    articleAmount.id = `${product._id}1`;
+                    articleAmount.className = 'articleAmount';
+                    articleAmount.innerText = 'In cart: 0';
+                    articleBtn.appendChild(articleAmount);
+    
+                    const productStock = document.createElement('span');
+                    productStock.id = `${product.lager}2`;
+                    productStock.innerText = `In stock ${product.lager}`;
+                    articleBtn.appendChild(productStock);        
+                    removeFromCartBtn.addEventListener('click', () =>
+                        removeFromCart(product, articleAmount, productStock)
+                    );
+                    addToCartBtn.addEventListener('click', () =>
+                        addToCart(product, articleAmount, productStock)
+                    );
+
+                });
+                
+                const resetProducts = document.createElement('button')
+                resetProducts.id = 'resetProducts';
+                resetProducts.className = 'resetProducts';
+                resetProducts.innerText = 'Reset';
+                categoryFiter.appendChild(resetProducts);
+
+                resetProducts.addEventListener('click', getAllProducts)
+            });
+    }
+
+
 function removeFromCart(product, articleAmount, productStock) {
 	const cart = JSON.parse(localStorage.getItem('cart')) || [];
 	const productAdded = cart.find((article) => article._id === product._id);
-
 	if (productAdded) {
 		if (productAdded.quantity === 1) {
 			const productRemovedIndex = cart.findIndex(
 				(article) => article._id === product._id
 			);
 			cart.splice(productRemovedIndex, 1);
-			articleAmount.innerText = 0;
+			articleAmount.innerText = `In cart 0`;
 			productStock.innerText = `In stock ${product.lager}`;
 			console.log(productAdded);
 		} else {
 			productAdded.quantity -= 1;
-			articleAmount.innerText = productAdded.quantity;
+			articleAmount.innerText = `In cart ${productAdded.quantity}`;
 			productStock.innerText = `In stock ${
 				product.lager - productAdded.quantity
 			}`;
@@ -305,10 +472,14 @@ function addToCart(product, articleAmount, productStock) {
 	const productAdded = cart.find((article) => article._id === product._id);
 
 	if (productAdded) {
+        if (product.lager - productAdded.quantity <= 0) {
+            productStock.innerText = `Product out of stock`;
+        return;
+    }
 		productStock.lager -= 1;
 		productAdded.quantity += 1;
 		console.log(productAdded);
-		articleAmount.innerText = productAdded.quantity;
+		articleAmount.innerText = `In cart ${productAdded.quantity}`;
 		productStock.innerText = `In stock ${
 			product.lager - productAdded.quantity
 		}`;
@@ -320,7 +491,7 @@ function addToCart(product, articleAmount, productStock) {
 			quantity: 1,
 		});
 		console.log(cart);
-		articleAmount.innerText = 1;
+		articleAmount.innerText = `In cart 1`
 		productStock.innerText = `In stock ${product.lager - 1}`;
 	}
 	localStorage.setItem('cart', JSON.stringify(cart));
@@ -349,6 +520,8 @@ function printCart() {
 		}
 	});
 }
+
+printCart()
 
 orderBtn.addEventListener('click', sendOrder);
 

@@ -10,7 +10,7 @@
 	</head>
 	<body>
         <h1>Welcome to our humble manifest</h1>
-        <div id="signupPage">
+        <div id="signupPage" class="signupPage">
             <h2>Sign-up</h2>
             <label for="name">name</label>
             <input id="signupName" type="text">
@@ -18,10 +18,10 @@
             <input id="signupEmail" type="text">
             <label for="name">Password</label>
             <input id="signupPassword" type="text"> 
-            <button id="signupBtn">Register</button>
+            <button id="signupBtn" class="signupBtn">Register</button>
         </div>
 
-        <div id="loginPage">
+        <div id="loginPage" class="loginPage">
             <h2>Login</h2>
 
             <input id="emailInput" type="text" placeholder="test7@mail.com">
@@ -56,10 +56,11 @@
             <button id="createProductBtn">Register</button>
         </div>
         
-        <div id="allProducts">
+        <div id="allProducts" class="allProducts">
             
             <h2>Products</h2>
-            <div id="productContainer"></div>
+            <span id="categoryFiter"></span>
+            <div id="productContainer" class="productContainer"></div>
         </div>
 
         <div id="cartContainer">
